@@ -21,7 +21,7 @@ public class Main {
         negozio.addArticolo(articolo4);
         negozio.addArticolo(articolo1);
 
-        negozio.salvaCatalogo("resources/catalogo.csv");
+        negozio.loadCatalogo("resources/catalogo.csv");
     }
 
 }

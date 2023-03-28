@@ -3,10 +3,7 @@ package shop;
 import products.Articolo;
 import products.TipoProdotto;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,13 +99,52 @@ public class Negozio {
      * @param pathname il path del file dove scrivere
      * @throws IOException
      */
-    public void salvaCatalogo(String pathname) throws IOException {
+    public void saveCatalogo(String pathname) throws IOException {
         File file = new File(pathname);
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Articolo, Integer> entry : catalogo.entrySet()) {
             bw.append(entry.getKey().toString() + "," + entry.getValue() + "\n");
         }
         bw.close();
+    }
+
+    /**
+     * questo metodo prende in input un file csv contenente le informazioni di un catalogo
+     * e ritorna un negozio con il catalogo letto dal file.
+     * @param pathname il percorso di un file csv
+     * @return un oggetto Negozio costruito con le info lette sul file
+     * @throws IOException se il file non viene trovato o non può essere letto
+     */
+    public Negozio loadCatalogo(String pathname) throws IOException {
+        File file = new File(pathname);
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        HashMap<Articolo, Integer> inventario = new HashMap<>();
+        while (br.ready()) {
+            String riga = br.readLine();
+            String[] info_riga = riga.split(",");
+            String tipo_articolo = info_riga[2];
+            TipoProdotto tp;
+            switch (tipo_articolo) {
+                case "SELF_CARE":
+                    tp = TipoProdotto.SELF_CARE;
+                    break;
+                case "TECH":
+                    tp = TipoProdotto.TECH;
+                    break;
+                case "CLOTHING":
+                    tp = TipoProdotto.CLOTHING;
+                    break;
+                case "FOOD":
+                    tp = TipoProdotto.FOOD;
+                    break;
+                default:
+                    throw new IllegalArgumentException("tipo prodotto non riconosciuto");
+            }
+            Articolo articolo_riga = new Articolo(info_riga[0], Double.valueOf(info_riga[1]), tp);
+            inventario.put(articolo_riga, Integer.valueOf(info_riga[3]));
+        }
+        Negozio myShop = new Negozio("pippoShop", inventario);
+        return myShop;
     }
 
 }
