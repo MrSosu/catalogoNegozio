@@ -45,6 +45,10 @@ public class Articolo extends Product implements Sconto {
 
     @Override
     public String toString() {
+        return nome;
+    }
+
+    public String articoloToString() {
         return nome + "," + prezzo + "," + tipoProdotto;
     }
 }

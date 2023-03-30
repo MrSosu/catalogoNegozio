@@ -4,8 +4,11 @@ import products.Articolo;
 import products.TipoProdotto;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Negozio {
 
@@ -87,11 +90,7 @@ public class Negozio {
      * @param sconto lo sconto da applicare
      */
     public void applicaScontoPerTipo(TipoProdotto tipoProdotto, double sconto) {
-        for (Articolo a : catalogo.keySet()) {
-            if (a.getTipoProdotto().equals(tipoProdotto)) {
-                a.applicaSconto(sconto);
-            }
-        }
+        catalogo.keySet().stream().filter(a -> a.getTipoProdotto().equals(tipoProdotto)).forEach(a -> a.applicaSconto(sconto));
     }
 
     /**
@@ -103,7 +102,7 @@ public class Negozio {
         File file = new File(pathname);
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Articolo, Integer> entry : catalogo.entrySet()) {
-            bw.append(entry.getKey().toString() + "," + entry.getValue() + "\n");
+            bw.append(entry.getKey().articoloToString() + "," + entry.getValue() + "\n");
         }
         bw.close();
     }
@@ -117,10 +116,9 @@ public class Negozio {
      */
     public Negozio loadCatalogo(String pathname) throws IOException {
         File file = new File(pathname);
-        BufferedReader br = new BufferedReader(new FileReader(file));
+        List<String> righeFile = Files.lines(file.toPath()).collect(Collectors.toList()); // ---> questa riga mi legge già tutto il file
         HashMap<Articolo, Integer> inventario = new HashMap<>();
-        while (br.ready()) {
-            String riga = br.readLine();
+        for(String riga : righeFile) {
             String[] info_riga = riga.split(",");
             String tipo_articolo = info_riga[2];
             TipoProdotto tp;
