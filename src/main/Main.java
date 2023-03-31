@@ -7,6 +7,7 @@ import shop.Negozio;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,51 +29,51 @@ public class Main {
         negozio.addArticolo(articolo1);
         negozio.addArticolo(articolo5);
 
+        Articolo a1 = negozio.getArticolo("Mela");
+        System.out.println(a1);
+        double discount_price = a1.calcolaPrezzoScontato();
+        System.out.println(discount_price);
         // negozio.saveCatalogo("resources/catalogo.csv");
         // negozio.loadCatalogo("resources/catalogo.csv");
 
         // ottenere la lista di tutti i prodotti di tipo food
-        List<Articolo> cibi = negozio.getCatalogo().keySet().stream().filter(a -> a.getTipoProdotto().equals(TipoProdotto.FOOD)).toList();
-        System.out.println(cibi);
+        List<Articolo> cibi =
+                negozio.getCatalogo().keySet().stream()
+                        .filter(a -> a.getTipoProdotto().equals(TipoProdotto.FOOD))
+                        .toList();
 
         // ottenere il numero di articoli che costano più di 20 euro
-        long count = negozio.getCatalogo().keySet().stream().filter(a -> a.getPrezzo() > 20).count();
+        long piuDIVenti = negozio.getCatalogo().keySet().stream()
+                .filter(a -> a.getPrezzo() > 20)
+                .count();
 
         // ottenere la somma di tutti i prezzi dei prodotti  del catalogo
-        negozio.getCatalogo().keySet().stream()
+        double somma = negozio.getCatalogo().keySet().stream()
                 .map(a -> a.getPrezzo())
                 .reduce(0.0, Double::sum);
 
         // verificare che esista almeno un prodotto tech
-        boolean boolTech =
-                negozio.getCatalogo().keySet().stream()
+        boolean isTech = negozio.getCatalogo().keySet().stream()
                 .anyMatch(a -> a.getTipoProdotto().equals(TipoProdotto.TECH));
-        System.out.println("Esiste almeno un articolo di tipo tech? " + boolTech);
 
         // verificare che tutti gli articoli abbiano un prezzo maggiore di 1 euro
-        boolean neuroBool =
-                negozio.getCatalogo().keySet().stream()
-                        .allMatch(a -> a.getPrezzo() > 1);
-        System.out.println("Tutti gli articoli costano più di un euro? " + neuroBool);
+        boolean allMaggioreEuro = negozio.getCatalogo().keySet().stream()
+                .allMatch(a -> a.getPrezzo() > 1);
 
         // verificare che tutti gli articoli non di tipo food abbiano un prezzo maggiore di 1 euro
-        boolean neuroBool2 =
-                negozio.getCatalogo().keySet().stream()
-                        .filter(a -> !a.getTipoProdotto().equals(TipoProdotto.FOOD))
-                        .allMatch(a -> a.getPrezzo() > 1);
-        System.out.println("Tutti gli articoli non food costano più di un euro? " + neuroBool2);
+        boolean nonFood = negozio.getCatalogo().keySet().stream()
+                .filter(a -> !a.getTipoProdotto().equals(TipoProdotto.FOOD))
+                .allMatch(a -> a.getPrezzo() > 1);
 
         // verificare che nessun articolo si chiami "fuffa"
-        boolean fuffaBool =
-                negozio.getCatalogo().keySet().stream()
-                        .noneMatch(a -> a.getNome().equals("fuffa"));
-        System.out.println("Nessun articolo si chiama fuffa? " + fuffaBool);
-
+        boolean noFuffa = negozio.getCatalogo().keySet().stream()
+                .noneMatch(a -> a.getNome().equals("fuffa"));
 
         // leggere da un file con gli stream
-        File fileNegozio = new File("resources/catalogo.csv");
-        List<String> righeFile = Files.lines(fileNegozio.toPath()).collect(Collectors.toList());
+        List<String> righeFile = Files.lines(Path.of("resources/catalogo.csv")).toList();
+
         System.out.println(righeFile);
+
     }
 
 
